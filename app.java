@@ -56,7 +56,7 @@ public class app {
         formPanel.add(btnRegistrar);
 
         // Tabla de personas
-        String[] columnNames = {"Nombre", "Edad", "Teléfono"};
+        String[] columnNames = {"Nombre", "Edad", "Teléfono", "Estado de Pago"};
         DefaultTableModel tableModel = new DefaultTableModel(new Object[][]{}, columnNames);
         JTable table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -65,9 +65,11 @@ public class app {
         JPanel actionPanel = new JPanel(new FlowLayout());
         JButton btnEditar = new JButton("Editar");
         JButton btnEliminar = new JButton("Eliminar");
+        JButton btnModificarPago = new JButton("Modificar Pago");
 
         actionPanel.add(btnEditar);
         actionPanel.add(btnEliminar);
+        actionPanel.add(btnModificarPago);
 
         panel.add(formPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -81,7 +83,7 @@ public class app {
                 String telefono = txtTelefono.getText();
 
                 personas.add(new Persona(nombre, edad, telefono));
-                tableModel.addRow(new Object[]{nombre, edad, telefono});
+                tableModel.addRow(new Object[]{nombre, edad, telefono, "Al día"});
 
                 JOptionPane.showMessageDialog(frame, "Persona registrada con éxito.");
                 txtNombre.setText("");
@@ -130,6 +132,31 @@ public class app {
                 JOptionPane.showMessageDialog(frame, "Registro eliminado con éxito.");
             } else {
                 JOptionPane.showMessageDialog(frame, "Seleccione una fila para eliminar.");
+            }
+        });
+
+        // Acción del botón Modificar Pago
+        btnModificarPago.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow >= 0) {
+                Persona persona = personas.get(selectedRow);
+                String nuevoEstado = (String) JOptionPane.showInputDialog(
+                        frame,
+                        "Seleccione el nuevo estado de pago:",
+                        "Modificar Pago",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new String[]{"Al día", "En deuda"},
+                        persona.getEstadoPago()
+                );
+
+                if (nuevoEstado != null) {
+                    persona.setEstadoPago(nuevoEstado);
+                    tableModel.setValueAt(nuevoEstado, selectedRow, 3);
+                    JOptionPane.showMessageDialog(frame, "Estado de pago actualizado.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(frame, "Seleccione una fila para modificar el estado de pago.");
             }
         });
 
@@ -219,7 +246,8 @@ public class app {
             StringBuilder informe = new StringBuilder("Informe de Torneos:\n");
             for (Persona persona : personas) {
                 informe.append(persona.getNombre()).append(": Participaciones: ").append(persona.getTorneosParticipados())
-                        .append(", Mejor posición: ").append(persona.getMejorPosicion()).append("\n");
+                        .append(", Mejor posición: ").append(persona.getMejorPosicion())
+                        .append(", Promedio de posiciones: ").append(persona.getPromedioPosiciones()).append("\n");
             }
             JOptionPane.showMessageDialog(frame, informe.toString());
         });
@@ -227,7 +255,7 @@ public class app {
         btnInformePagos.addActionListener(e -> {
             StringBuilder informe = new StringBuilder("Informe de Pagos Mensuales:\n");
             for (Persona persona : personas) {
-                informe.append(persona.getNombre()).append(": Pagos al día.\n");
+                informe.append(persona.getNombre()).append(": ").append(persona.getEstadoPago()).append("\n");
             }
             JOptionPane.showMessageDialog(frame, informe.toString());
         });
@@ -247,6 +275,8 @@ class Persona {
     private int asistencias;
     private int torneosParticipados;
     private int mejorPosicion;
+    private double sumaPosiciones;
+    private String estadoPago;
 
     public Persona(String nombre, int edad, String telefono) {
         this.nombre = nombre;
@@ -255,12 +285,14 @@ class Persona {
         this.asistencias = 0;
         this.torneosParticipados = 0;
         this.mejorPosicion = Integer.MAX_VALUE; // Inicializar con un valor alto.
+        this.sumaPosiciones = 0;
+        this.estadoPago = "Al día";
     }
 
     public String getNombre() {
         return nombre;
     }
-    
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -283,6 +315,7 @@ class Persona {
 
     public void registrarTorneo(int posicion) {
         this.torneosParticipados++;
+        this.sumaPosiciones += posicion;
         this.mejorPosicion = Math.min(this.mejorPosicion, posicion);
     }
 
@@ -292,5 +325,17 @@ class Persona {
 
     public int getMejorPosicion() {
         return mejorPosicion == Integer.MAX_VALUE ? 0 : mejorPosicion;
+    }
+
+    public double getPromedioPosiciones() {
+        return torneosParticipados > 0 ? sumaPosiciones / torneosParticipados : 0;
+    }
+
+    public String getEstadoPago() {
+        return estadoPago;
+    }
+
+    public void setEstadoPago(String estadoPago) {
+        this.estadoPago = estadoPago;
     }
 }
