@@ -77,10 +77,26 @@ public class app {
 
         // Acción del botón Registrar
         btnRegistrar.addActionListener(e -> {
+            String nombre = txtNombre.getText().trim();
+            String edadStr = txtEdad.getText().trim();
+            String telefono = txtTelefono.getText().trim();
+
+            if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+")) {
+                JOptionPane.showMessageDialog(frame, "El nombre solo puede contener letras.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             try {
-                String nombre = txtNombre.getText();
-                int edad = Integer.parseInt(txtEdad.getText());
-                String telefono = txtTelefono.getText();
+                int edad = Integer.parseInt(edadStr);
+                if (edad < 0) {
+                    JOptionPane.showMessageDialog(frame, "La edad no puede ser negativa.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!telefono.matches("\\d{7,10}")) {
+                    JOptionPane.showMessageDialog(frame, "El teléfono debe contener entre 7 y 10 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
                 personas.add(new Persona(nombre, edad, telefono));
                 tableModel.addRow(new Object[]{nombre, edad, telefono, "Al día"});
@@ -90,7 +106,7 @@ public class app {
                 txtEdad.setText("");
                 txtTelefono.setText("");
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(frame, "Por favor, ingrese datos válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Por favor, ingrese una edad válida.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -102,8 +118,18 @@ public class app {
                 String nuevaEdad = JOptionPane.showInputDialog("Nueva edad:", tableModel.getValueAt(selectedRow, 1));
                 String nuevoTelefono = JOptionPane.showInputDialog("Nuevo teléfono:", tableModel.getValueAt(selectedRow, 2));
 
+                if (nuevoNombre != null && !nuevoNombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+")) {
+                    JOptionPane.showMessageDialog(frame, "El nombre solo puede contener letras.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 try {
                     int edad = Integer.parseInt(nuevaEdad);
+
+                    if (!nuevoTelefono.matches("\\d{7,10}")) {
+                        JOptionPane.showMessageDialog(frame, "El teléfono debe contener entre 7 y 10 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
                     tableModel.setValueAt(nuevoNombre, selectedRow, 0);
                     tableModel.setValueAt(edad, selectedRow, 1);
