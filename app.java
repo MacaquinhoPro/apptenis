@@ -109,7 +109,7 @@ public class app {
                 // Comprobación de ID único
                 boolean idExistente = personas.stream().anyMatch(p -> p.getId() == id);
                 if (idExistente) {
-                    JOptionPane.showMessageDialog(frame, "El ID ya existe. Por favor, ingrese uno diferente.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame,  "El ID ya existe. Por favor, ingrese uno diferente.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
         
