@@ -97,6 +97,11 @@ public class app {
                 JOptionPane.showMessageDialog(frame, "El ID debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
+            if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
+                JOptionPane.showMessageDialog(frame, "El nombre solo puede contener letras y espacios.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }            
         
             try {
                 int id = Integer.parseInt(idStr);
@@ -109,8 +114,13 @@ public class app {
                 }
         
                 int edad = Integer.parseInt(edadStr);
-                if (edad < 10) {
+                if (edad < 10 & edad >= 0) {
                     JOptionPane.showMessageDialog(frame, "La edad debe ser mayor a 10 años.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if(edad < 0) {
+                    JOptionPane.showMessageDialog(frame, "La edad no puede ser negativa.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
         
@@ -144,10 +154,10 @@ public class app {
                 String nuevaEdad = JOptionPane.showInputDialog("Nueva edad:", tableModel.getValueAt(selectedRow, 2));
                 String nuevoTelefono = JOptionPane.showInputDialog("Nuevo teléfono:", tableModel.getValueAt(selectedRow, 3));
 
-                if (nuevoNombre != null && (!nuevoNombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) || nuevoNombre.contains("@")) {
-                    JOptionPane.showMessageDialog(frame, "El nombre solo puede contener letras y no debe incluir el símbolo '@'.", "Error", JOptionPane.ERROR_MESSAGE);
+                if (nuevoNombre != null && (!nuevoNombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) || nuevoNombre.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "El nombre solo puede contener letras y espacios.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
-                }
+                }       
                 
 
                 try {
@@ -263,6 +273,11 @@ public class app {
             try {
                 int id = Integer.parseInt(idStr);
                 int posicion = Integer.parseInt(posicionStr);
+
+                if (posicion < 0) {
+                    JOptionPane.showMessageDialog(frame, "La posición en el torneo no puede ser negativa.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
                 for (Persona persona : personas) {
                     if (persona.getId() == id) {
