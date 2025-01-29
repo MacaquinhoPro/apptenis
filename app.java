@@ -125,10 +125,11 @@ public class app {
                 }
         
                 // Validación del número de teléfono (solo dígitos y longitud entre 7 y 10)
-                if (!telefono.matches("\\d{7,10}")) {
-                    JOptionPane.showMessageDialog(frame, "El teléfono debe contener entre 7 y 10 dígitos numéricos.", "Error", JOptionPane.ERROR_MESSAGE);
+                if (!telefono.matches("3\\d{9}")) {
+                    JOptionPane.showMessageDialog(frame, "El teléfono debe comenzar con '3' y contener exactamente 10 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                
         
                 // Registro de la persona
                 Persona persona = new Persona(id, nombre, edad, telefono);
