@@ -340,6 +340,7 @@ class Persona {
     private String estadoPago;
 
     public Persona(int id, String nombre, int edad, String telefono) {
+
         this.id = id;
         this.nombre = nombre;
         this.edad = edad;
