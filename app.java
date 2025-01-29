@@ -91,18 +91,12 @@ public class app {
             String nombre = txtNombre.getText().trim();
             String edadStr = txtEdad.getText().trim();
             String telefono = txtTelefono.getText().trim();
-        
-            // Verificación de formato de ID (debe ser un número entero positivo)
-            if (!idStr.matches("\\d+")) {
-                JOptionPane.showMessageDialog(frame, "El ID debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
+
+            if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+")) {
+                JOptionPane.showMessageDialog(frame, "El nombre solo puede contener letras.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
-                JOptionPane.showMessageDialog(frame, "El nombre solo puede contener letras y espacios.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }            
-        
             try {
                 int id = Integer.parseInt(idStr);
         
@@ -114,28 +108,19 @@ public class app {
                 }
         
                 int edad = Integer.parseInt(edadStr);
-                if (edad < 10 & edad >= 0) {
-                    JOptionPane.showMessageDialog(frame, "La edad debe ser mayor a 10 años.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                if(edad < 0) {
+                if (edad < 0) {
                     JOptionPane.showMessageDialog(frame, "La edad no puede ser negativa.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-        
-                // Validación del número de teléfono (solo dígitos y longitud entre 7 y 10)
-                if (!telefono.matches("3\\d{9}")) {
-                    JOptionPane.showMessageDialog(frame, "El teléfono debe comenzar con '3' y contener exactamente 10 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                if (!telefono.matches("\\d{7,10}")) {
+                    JOptionPane.showMessageDialog(frame, "El teléfono debe contener entre 7 y 10 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
-        
-                // Registro de la persona
-                Persona persona = new Persona(id, nombre, edad, telefono);
-                personas.add(persona);
-                tableModel.addRow(new Object[]{id, nombre, edad, telefono, "Al día"});
-        
+
+                personas.add(new Persona(nombre, edad, telefono));
+                tableModel.addRow(new Object[]{nombre, edad, telefono, "Al día"});
+
                 JOptionPane.showMessageDialog(frame, "Persona registrada con éxito.");
                 txtID.setText("");
                 txtNombre.setText("");
@@ -355,9 +340,7 @@ class Persona {
     private double sumaPosiciones;
     private String estadoPago;
 
-    public Persona(int id, String nombre, int edad, String telefono) {
-
-        this.id = id;
+    public Persona(String nombre, int edad, String telefono) {
         this.nombre = nombre;
         this.edad = edad;
         this.telefono = telefono;
