@@ -91,45 +91,69 @@ public class app {
             String nombre = txtNombre.getText().trim();
             String edadStr = txtEdad.getText().trim();
             String telefono = txtTelefono.getText().trim();
-
-            if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+")) {
+        
+            // Validar que los campos no estén vacíos
+            if (idStr.isEmpty() || nombre.isEmpty() || edadStr.isEmpty() || telefono.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        
+            if (!idStr.matches("\\d+")) {
+                JOptionPane.showMessageDialog(frame, "El ID debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        
+            if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
                 JOptionPane.showMessageDialog(frame, "El nombre solo puede contener letras.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+        
             try {
                 int id = Integer.parseInt(idStr);
         
                 // Comprobación de ID único
                 boolean idExistente = personas.stream().anyMatch(p -> p.getId() == id);
                 if (idExistente) {
-                    JOptionPane.showMessageDialog(frame,  "El ID ya existe. Por favor, ingrese uno diferente.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "El ID ya existe. Por favor, ingrese uno diferente.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
         
                 int edad = Integer.parseInt(edadStr);
-                if (edad < 0) {
+                if (edad < 10 & edad >= 0) {
+                    JOptionPane.showMessageDialog(frame, "La edad debe ser mayor a 10 años.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if(edad < 0) {
                     JOptionPane.showMessageDialog(frame, "La edad no puede ser negativa.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                if (!telefono.matches("\\d{7,10}")) {
-                    JOptionPane.showMessageDialog(frame, "El teléfono debe contener entre 7 y 10 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
+        
+                if (!telefono.matches("3\\d{9}")) {
+                    JOptionPane.showMessageDialog(frame, "El teléfono debe comenzar con '3' y contener exactamente 10 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                personas.add(new Persona(nombre, edad, telefono));
-                tableModel.addRow(new Object[]{nombre, edad, telefono, "Al día"});
-
+        
+                // Crear y agregar la persona
+                Persona nuevaPersona = new Persona(id, nombre, edad, telefono);
+                personas.add(nuevaPersona);
+        
+                // Agregar fila a la tabla en el orden correcto
+                tableModel.addRow(new Object[]{id, nombre, edad, telefono, "Al día"});
+        
                 JOptionPane.showMessageDialog(frame, "Persona registrada con éxito.");
+        
+                // Limpiar los campos
                 txtID.setText("");
                 txtNombre.setText("");
                 txtEdad.setText("");
                 txtTelefono.setText("");
+        
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(frame, "Por favor, ingrese una edad válida.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Por favor, ingrese valores válidos.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+        
         
 
         // Acción del botón Editar
@@ -143,16 +167,22 @@ public class app {
                 if (nuevoNombre != null && (!nuevoNombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) || nuevoNombre.isEmpty()) {
                     JOptionPane.showMessageDialog(frame, "El nombre solo puede contener letras y espacios.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
-                }       
+                }     
                 
 
                 try {
                     int edad = Integer.parseInt(nuevaEdad);
 
-                    if (!nuevoTelefono.matches("\\d{7,10}")) {
-                        JOptionPane.showMessageDialog(frame, "El teléfono debe contener entre 7 y 10 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (!nuevoTelefono.matches("3\\d{9}")) {
+                        JOptionPane.showMessageDialog(frame, "El teléfono debe comenzar con '3' y contener exactamente 10 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+
+                    if(edad < 10){
+                        JOptionPane.showMessageDialog(frame, "La edad debe ser mayor o igual a 10.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
 
                     tableModel.setValueAt(nuevoNombre, selectedRow, 1);
                     tableModel.setValueAt(edad, selectedRow, 2);
@@ -340,7 +370,9 @@ class Persona {
     private double sumaPosiciones;
     private String estadoPago;
 
-    public Persona(String nombre, int edad, String telefono) {
+    public Persona(int id, String nombre, int edad, String telefono) {
+
+        this.id = id;
         this.nombre = nombre;
         this.edad = edad;
         this.telefono = telefono;
